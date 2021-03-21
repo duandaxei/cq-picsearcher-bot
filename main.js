@@ -145,6 +145,9 @@ setInterval(() => {
 
 // 通用处理
 function commonHandle(e, context) {
+  // 忽略自己发给自己的消息
+  if (context.user_id === bot._qq) return true;
+
   // 黑名单检测
   if (Logger.checkBan(context.user_id, context.group_id)) return true;
 
@@ -627,9 +630,10 @@ function hasImage(msg) {
  * @param {string} message 消息
  */
 function sendMsg2Admin(message) {
-  if (bot.isReady() && global.config.bot.admin > 0) {
+  const admin = global.config.bot.admin;
+  if (bot.isReady() && admin > 0 && admin !== bot._qq) {
     bot('send_private_msg', {
-      user_id: global.config.bot.admin,
+      user_id: admin,
       message,
     });
   }
