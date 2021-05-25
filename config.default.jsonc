@@ -100,9 +100,9 @@
       "pximgServerPort": 0,
       // 发送时使用的P站本地反代服务地址，一般不需要，详见 wiki
       "usePximgAddr": "",
-      // 发送时使用的P站在线反代服务地址，详见 wiki（使用时上面三个配置将不再起效）
+      // 发送时使用的P站在线反代服务地址，支持占位符 {{pid}} {{p}} {{path}}，详见 wiki（使用时上面三个配置将不再起效）
       "pximgProxy": "",
-      // 镜像地址，发送地址时追加的在线反向代理的地址（将替换原链接的 i.pximg.net, 可配置多条）
+      // 镜像地址，发送地址时追加的在线反向代理的地址，设置为空数组则不追加，支持占位符同上
       "sendPximgProxys": ["https://i.pixiv.cat/"],
       // 对镜像地址进行短链接处理，可选值: ["oy.mk", "yww.uy"]，留空 "" 则不处理。
       "shortenPximgProxy": "",
@@ -177,8 +177,8 @@
     },
     // OCR 相关设置，请查看“wiki-附加功能-OCR文字识别”以了解更多
     "ocr": {
-      // 使用的 OCR 服务，可选值：["ocr.space", "baidubce", "tencent", "qq"]，qq 需要 go-cqhttp
-      "use": "ocr.space",
+      // 使用的 OCR 服务，可选值：["qq", "ocr.space", "baidubce", "tencent"]，qq 需要 go-cqhttp
+      "use": "qq",
       "ocr.space": {
         "defaultLANG": "eng",
         "apikey": ""
@@ -202,7 +202,7 @@
       // 检查更新间隔（小时），0 则关闭
       "updateInterval": 24,
       // 使用的 OCR 服务，可选值同上面的 bot.ocr.use
-      "ocr": "ocr.space"
+      "ocr": "qq"
     },
     // 定时提醒功能设置，请查看“wiki-附加功能-定时提醒”以了解更多
     "reminder": {
