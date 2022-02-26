@@ -2,6 +2,22 @@
 
 ## 2022
 
+### 02-26 v2.33.5
+
+- 修复还是没有完全修好的 ascii2d 无法使用的问题 [#283](../../issues/283)
+- 配置项变更
+  - A `bot.cfTLSVersion`
+
+### 02-26 v2.33.4
+
+- 修复没有完全修好的 ascii2d 无法使用的问题 [#283](../../issues/283)
+
+### 02-26 v2.33.3
+
+- 修复 ascii2d 无法使用的问题，感谢 @DiheChen [#283](../../issues/283)
+- `bot.useAscii2dWhenQuotaExcess`, `bot.useAscii2dWhenLowAcc`, `bot.useAscii2dWhenFailed` 的默认值变更回 `true`
+- 更新了一些依赖的版本
+
 ### 02-18 v2.33.2
 
 - 修复部分参数在特定情况下无法正常解析的问题 ([#292](../../issues/292))
