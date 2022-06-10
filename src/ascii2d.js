@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import Cheerio from 'cheerio';
+import * as Cheerio from 'cheerio';
 import pixivShorten from './urlShorten/pixiv';
 import logError from './logError';
 import { retryAync } from './utils/retry';
@@ -22,7 +22,7 @@ async function doSearch(url, snLowAcc = false) {
   else if (!/^https?:\/\//.test(host)) host = `http://${host}`;
   const { colorURL, colorDetail } = await retryAync(
     async () => {
-      const ret = await Axios.cfGet(`${host}/search/url/${encodeURIComponent(url)}`);
+      const ret = await Axios.cfGet(`${host}/search/url/${url}`);
       const colorURL = ret.request.res.responseUrl;
       if (!colorURL.includes('/color/')) {
         const $ = Cheerio.load(ret.data, { decodeEntities: false });
