@@ -8,7 +8,11 @@ class Puppeteer {
   async launch() {
     if (this.browser) return;
     if (global.config.bot.debug) console.log('Puppeteer launching');
-    this.browser = await puppeteer.launch({ headless: true, executablePath: executablePath() });
+    this.browser = await puppeteer.launch({
+      args: ['--no-sandbox'],
+      headless: true,
+      executablePath: executablePath(),
+    });
     if (global.config.bot.debug) console.log('Puppeteer launched');
   }
 
@@ -45,7 +49,10 @@ class Puppeteer {
     try {
       if (global.config.bot.debug) console.log('Puppeteer get JSON', url);
       await page.goto(url);
-      await page.waitForSelector('body > pre');
+      await page.waitForSelector('body > pre').catch(async e => {
+        if (global.config.bot.debug) console.log(await page.evaluate(() => document.documentElement.outerHTML));
+        throw e;
+      });
       const res = await page.evaluate(() => ({
         request: {
           res: {
