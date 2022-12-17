@@ -1,5 +1,5 @@
-import logError from '../utils/logError.mjs';
 import Axios from '../utils/axiosProxy.mjs';
+import logError from '../utils/logError.mjs';
 
 /**
  * oy.mk 短网址
@@ -14,7 +14,7 @@ export default url =>
       error: false,
     }))
     .catch(e => {
-      console.error(`${global.getTime()} [error] oy.mk shorten`);
+      console.error('[error] oy.mk shorten');
       logError(e);
       return {
         result: url,

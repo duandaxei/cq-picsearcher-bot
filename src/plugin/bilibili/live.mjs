@@ -1,7 +1,7 @@
 import _ from 'lodash-es';
 import CQ from '../../utils/CQcode.mjs';
-import logError from '../../utils/logError.mjs';
 import humanNum from '../../utils/humanNum.mjs';
+import logError from '../../utils/logError.mjs';
 import { retryGet, retryPost } from '../../utils/retry.mjs';
 
 export const getLiveRoomInfo = id =>
@@ -28,7 +28,7 @@ export const getLiveRoomInfo = id =>
         ].join('\n')
     )
     .catch(e => {
-      logError(`${global.getTime()} [error] bilibili get live room info ${id}`);
+      logError(`[error] bilibili get live room info ${id}`);
       logError(e);
       return null;
     });
@@ -51,7 +51,7 @@ export const getUserLiveData = async uid => {
       cover,
     };
   } catch (e) {
-    logError(`${global.getTime()} [error] bilibili live data ${uid}`);
+    logError(`[error] bilibili live data ${uid}`);
     logError(e);
     return null;
   }
@@ -74,7 +74,7 @@ export const getUsersLiveData = async uids => {
       cover: cover_from_user,
     }));
   } catch (e) {
-    logError(`${global.getTime()} [error] bilibili live data ${uids}`);
+    logError(`[error] bilibili live data ${uids}`);
     logError(e);
     return {};
   }

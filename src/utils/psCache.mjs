@@ -1,7 +1,7 @@
 import Path from 'path';
 import { encode, decode } from '@msgpack/msgpack';
-import klaw from 'klaw-sync';
 import Fs from 'fs-extra';
+import klaw from 'klaw-sync';
 import emitter from './emitter.mjs';
 import logError from './logError.mjs';
 import { getDirname } from './path.mjs';
@@ -97,7 +97,7 @@ class PSCache {
         filter: ({ stats: { mtimeMs } }) => mtimeMs < this.EXPIRE_MS,
       }).forEach(({ path }) => Fs.removeSync(path));
     } catch (e) {
-      console.error(`${global.getTime()} clear expired pscache`);
+      console.error('clear expired pscache');
       logError(e);
     }
   }

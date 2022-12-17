@@ -1,12 +1,12 @@
-import _ from 'lodash-es';
 import * as Cheerio from 'cheerio';
 import FormData from 'form-data';
-import logError from '../utils/logError.mjs';
-import CQ from '../utils/CQcode.mjs';
-import { retryAsync } from '../utils/retry.mjs';
-import { getCqImg64FromUrl, getAntiShieldedCqImg64FromUrl } from '../utils/image.mjs';
-import { confuseURL } from '../utils/url.mjs';
+import _ from 'lodash-es';
 import Axios from '../utils/axiosProxy.mjs';
+import CQ from '../utils/CQcode.mjs';
+import { getCqImg64FromUrl, getAntiShieldedCqImg64FromUrl } from '../utils/image.mjs';
+import logError from '../utils/logError.mjs';
+import { retryAsync } from '../utils/retry.mjs';
+import { confuseURL } from '../utils/url.mjs';
 
 let hostsI = 0;
 
@@ -116,7 +116,7 @@ function getDetail(ret, baseURL) {
     }
   }
   if (!result.title) {
-    logError(`${global.getTime()} [error] ascii2d getDetail`);
+    logError('[error] ascii2d getDetail');
     logError(ret);
   }
   return result;

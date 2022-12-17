@@ -1,9 +1,9 @@
 import Jimp from 'jimp';
-import CQ from './CQcode.mjs';
-import logError from './logError.mjs';
-import { imgAntiShielding } from './imgAntiShielding.mjs';
-import { retryAsync } from './retry.mjs';
 import Axios from './axiosProxy.mjs';
+import CQ from './CQcode.mjs';
+import { imgAntiShielding } from './imgAntiShielding.mjs';
+import logError from './logError.mjs';
+import { retryAsync } from './retry.mjs';
 
 export const getCqImg64FromUrl = async (url, type = undefined) => {
   try {
@@ -14,7 +14,7 @@ export const getCqImg64FromUrl = async (url, type = undefined) => {
     );
     return CQ.img64(base64, type);
   } catch (e) {
-    logError(`${global.getTime()} [error] getCqImg64FromUrl`);
+    logError('[error] getCqImg64FromUrl');
     logError(e);
   }
   return '';
@@ -31,7 +31,7 @@ export const getAntiShieldedCqImg64FromUrl = async (url, mode, type = undefined)
     const base64 = await imgAntiShielding(img, mode);
     return CQ.img64(base64, type);
   } catch (e) {
-    logError(`${global.getTime()} [error] getAntiShieldedCqImg64FromUrl`);
+    logError('[error] getAntiShieldedCqImg64FromUrl');
     logError(e);
   }
   return '';

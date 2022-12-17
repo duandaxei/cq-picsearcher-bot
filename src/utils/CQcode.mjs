@@ -1,7 +1,7 @@
 import _ from 'lodash-es';
 import promiseLimit from 'promise-limit';
-import logError from './logError.mjs';
 import { createCache, getCache } from './cache.mjs';
+import logError from './logError.mjs';
 import { retryGet } from './retry.mjs';
 
 const dlImgLimit = promiseLimit(4);
@@ -131,7 +131,7 @@ class CQCode {
       if (!path.startsWith('/')) path = `/${path}`;
       return new CQCode('image', { file: `file://${path}`, type }).toString();
     } catch (e) {
-      logError(`${global.getTime()} [error] cq img pre-download`);
+      logError('[error] cq img pre-download');
       logError(e);
     }
     return new CQCode('image', { file: url, type }).toString();

@@ -1,7 +1,7 @@
 import { stringify } from 'qs';
 import CQ from '../../utils/CQcode.mjs';
-import logError from '../../utils/logError.mjs';
 import humanNum from '../../utils/humanNum.mjs';
+import logError from '../../utils/logError.mjs';
 import { retryGet } from '../../utils/retry.mjs';
 
 export const getVideoInfo = async param => {
@@ -32,7 +32,7 @@ ${humanNum(view)}播放 ${humanNum(danmaku)}弹幕
 https://www.bilibili.com/video/${bvid}`,
     };
   } catch (e) {
-    logError(`${global.getTime()} [error] bilibili get video info ${param}`);
+    logError(`[error] bilibili get video info ${param}`);
     logError(e);
     return {};
   }
@@ -62,7 +62,7 @@ https://www.bilibili.com/video/${bvid}`,
       }
     )
     .catch(e => {
-      logError(`${global.getTime()} [error] bilibili get video info ${keyword}`);
+      logError(`[error] bilibili get video info ${keyword}`);
       logError(e);
       return {};
     });

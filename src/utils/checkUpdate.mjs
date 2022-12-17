@@ -1,10 +1,10 @@
 import { spawn } from 'child_process';
 import { resolve } from 'path';
-import _ from 'lodash-es';
-import Fs from 'fs-extra';
 import AxiosRaw from 'axios';
-import removeMd from 'remove-markdown';
 import { compare } from 'compare-versions';
+import Fs from 'fs-extra';
+import _ from 'lodash-es';
+import removeMd from 'remove-markdown';
 import Axios from './axiosProxy.mjs';
 import { getDirname } from './path.mjs';
 
@@ -25,7 +25,7 @@ const getLatestVersion = async () => {
 export const checkUpdate = async () => {
   const latestVersion = await getLatestVersion();
   if (!latestVersion || lastCheck === latestVersion || compare(version, latestVersion, '>=')) return;
-  console.log(global.getTime(), `发现新版本：${latestVersion}`);
+  console.log(`发现新版本：${latestVersion}`);
   const { data: fullChangelog } = await AxiosRaw.get(
     `https://fastly.jsdelivr.net/gh/${repoName}@v${latestVersion}/CHANGELOG.md`
   );

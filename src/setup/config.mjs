@@ -1,9 +1,9 @@
-import { resolve } from 'path';
 import { readFileSync, writeFileSync } from 'fs';
-import _ from 'lodash-es';
-import { jsonc } from 'jsonc';
+import { resolve } from 'path';
 import cjson from 'comment-json';
 import deepFreeze from 'deep-freeze';
+import { jsonc } from 'jsonc';
+import _ from 'lodash-es';
 import emitter from '../utils/emitter.mjs';
 import { getDirname } from '../utils/path.mjs';
 
@@ -27,7 +27,7 @@ const stringToArrayPaths = new Set([
   'whatanimeToken',
   'ascii2dHost',
 ]);
-const noCheckPaths = new Set(['bot.bilibili.push']);
+const noCheckPaths = new Set(['bot.bilibili.push', 'bot.chatgpt.additionParams']);
 
 function recursiveCopy(c, dc, cc, dcc, parentPath = '') {
   for (const key in dc) {
@@ -69,7 +69,7 @@ function loadJSON(path) {
       msg = `ERROR: 配置文件 JSON 格式有误\n${message}`;
     } else msg = `${e}`;
 
-    console.error(global.getTime(), msg);
+    console.error(msg);
 
     global.sendMsg2Admin(msg);
   }
@@ -114,10 +114,10 @@ export function loadConfig(init = false) {
 
   if (init) {
     emitter.emit('configReady');
-    console.log(global.getTime(), '配置已加载');
+    console.log('配置已加载');
   } else {
     emitter.emit('configReload');
-    console.log(global.getTime(), '配置已重载');
+    console.log('配置已重载');
     global.sendMsg2Admin('配置已重载');
   }
 }

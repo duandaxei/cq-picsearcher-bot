@@ -1,8 +1,8 @@
 import _ from 'lodash-es';
 import NodeCache from 'node-cache';
 import CQ from '../../utils/CQcode.mjs';
-import logError from '../../utils/logError.mjs';
 import humanNum from '../../utils/humanNum.mjs';
+import logError from '../../utils/logError.mjs';
 import { retryGet } from '../../utils/retry.mjs';
 import { purgeLink, purgeLinkInText } from './utils.mjs';
 
@@ -83,7 +83,7 @@ export const getDynamicInfo = async id => {
     });
     return dynamicCard2msg(card);
   } catch (e) {
-    logError(`${global.getTime()} [error] bilibili get dynamic info ${id}`);
+    logError(`[error] bilibili get dynamic info ${id}`);
     logError(e);
     return null;
   }
@@ -126,7 +126,7 @@ export const getUserNewDynamicsInfo = async uid => {
       )
     ).filter(Boolean);
   } catch (e) {
-    logError(`${global.getTime()} [error] bilibili get user dynamics info ${uid}`);
+    logError(`[error] bilibili get user dynamics info ${uid}`);
     logError(e);
     return null;
   }
@@ -141,7 +141,7 @@ const formatters = {
     '',
     (
       await dynamicCard2msg(origin, forPush).catch(e => {
-        logError(`${global.getTime()} [error] bilibili parse original dynamic`, card);
+        logError('[error] bilibili parse original dynamic', card);
         logError(e);
         return null;
       })

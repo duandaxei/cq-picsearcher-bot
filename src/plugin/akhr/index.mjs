@@ -1,9 +1,9 @@
 import Path from 'path';
-import _ from 'lodash-es';
-import Fs from 'fs-extra';
 import Axios from 'axios';
-import logError from '../../utils/logError.mjs';
+import Fs from 'fs-extra';
+import _ from 'lodash-es';
 import emitter from '../../utils/emitter.mjs';
+import logError from '../../utils/logError.mjs';
 import { getDirname } from '../../utils/path.mjs';
 import draw from './akhr.draw.mjs';
 
@@ -80,7 +80,7 @@ async function updateData() {
     AKDATA = await pullData();
     Fs.writeJsonSync(AKDATA_PATH, AKDATA);
   } catch (e) {
-    console.error(`${global.getTime()} 方舟公招数据更新`);
+    console.error('方舟公招数据更新');
     logError(e);
     return false;
   }
@@ -101,7 +101,7 @@ async function init() {
     else AKDATA = Fs.readJsonSync(AKDATA_PATH);
     setUpdateDataInterval();
   } catch (e) {
-    console.error(`${global.getTime()} akhr 初始化`);
+    console.error('akhr 初始化');
     logError(e);
   }
 }
