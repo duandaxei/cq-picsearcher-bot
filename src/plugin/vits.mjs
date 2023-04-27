@@ -68,7 +68,7 @@ export default async context => {
     return defaultVoiceId;
   })();
 
-  global.replyMsg(context, CQ.record(getVoiceUrl({ id: useId, lang, text: CQ.unescape(text) })));
+  global.replyMsg(context, CQ.record(await getVoiceUrl({ id: useId, lang, text: CQ.unescape(text) })));
 
   return true;
 };
@@ -189,14 +189,19 @@ const handleShowHelp = context => {
   return true;
 };
 
-const getVoiceUrl = ({ id, lang, text }) => {
+const getVoiceUrl = async ({ id, lang, text }) => {
   const url = new URL(urlJoin(global.config.bot.vits.apiUrl, '/voice'));
   const params = url.searchParams;
 
   if (id) params.set('id', id);
   if (lang) params.set('lang', lang);
   params.set('text', text);
-  params.set('format', 'silk');
+  if (global.config.bot.vits.noFFmpeg) {
+    params.set('format', 'silk');
+  }
 
-  return url.href;
+  const { data } = await Axios.get(url.href, { responseType: 'arraybuffer' });
+  const base64 = Buffer.from(data).toString('base64');
+
+  return `base64://${base64}`;
 };
