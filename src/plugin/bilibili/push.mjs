@@ -191,7 +191,6 @@ async function checkSeason(type) {
     const texts = map[usid];
     if (!texts || !texts.length) continue;
     for (const text of texts) {
-      if (text.includes('详情请点击互动抽奖查看')) continue;
       for (const { gid, atAll } of confs) {
         tasks.push(() =>
           global.sendGroupMsg(gid, atAll ? `${text}\n\n${CQ.atAll()}` : text).catch(e => {
@@ -244,10 +243,11 @@ async function handleFeedDynamic(items) {
     const dynamics = dynamicMap[uid];
     if (!dynamics?.length) continue;
     for await (const { id, type, text } of dynamics) {
+      if (text.includes('详情请点击互动抽奖查看')) continue;
       for (const { gid, atAll, onlyVideo } of confs) {
         if (onlyVideo && type !== 'MAJOR_TYPE_ARCHIVE') continue;
         tasks.push(() => {
-          console.log(`[BilibiliPush] push dynamic ${id} to group ${gid}`);
+          if (global.config.bot.debug) console.log(`[BilibiliPush] push dynamic ${id} to group ${gid}`);
           return global.sendGroupMsg(gid, atAll ? `${text}\n\n${CQ.atAll()}` : text).catch(e => {
             console.error(`[BilibiliPush] push dynamic to group ${gid}`);
             logError(e);
@@ -271,7 +271,7 @@ async function handleFeedLive(items) {
     for await (const { id, text } of dynamics) {
       for (const { gid, atAll } of confs) {
         tasks.push(() => {
-          console.log(`[BilibiliPush] push live ${id} to group ${gid}`);
+          if (global.config.bot.debug) console.log(`[BilibiliPush] push live ${id} to group ${gid}`);
           return global.sendGroupMsg(gid, atAll ? `${text}\n\n${CQ.atAll()}` : text).catch(e => {
             console.error(`[BilibiliPush] push live to group ${gid}`);
             logError(e);
