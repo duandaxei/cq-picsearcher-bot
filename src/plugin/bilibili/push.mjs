@@ -97,13 +97,13 @@ async function checkPush() {
               logError(e);
               return [];
             }),
-            checkLive().catch(e => {
-              console.error('[BilibiliPush] check live');
-              logError(e);
-              return [];
-            }),
           ]
         : []),
+      checkLive().catch(e => {
+        console.error('[BilibiliPush] check live');
+        logError(e);
+        return [];
+      }),
       checkSeason('season').catch(e => {
         console.error('[BilibiliPush] check season');
         logError(e);
@@ -205,10 +205,22 @@ async function checkSeason(type) {
 }
 
 async function checkFeed() {
+  if (!dynamicFeed.isAvailable) {
+    clearInterval(checkFeedTask);
+    dynamicFeed = null;
+    const sendNotice = () =>
+      global.sendMsg2Admin(
+        '哔哩哔哩cookie已过期，推送暂停，请配置新cookie后重载配置以重新启用推送（该提醒每6小时重复提醒一次）'
+      );
+    checkFeedTask = setInterval(sendNotice, 6 * 3600 * 1000);
+    sendNotice();
+    return;
+  }
+
   const newItems = await dynamicFeed.checkAndGetNewDynamic();
   if (!newItems.length) return;
 
-  const tasks = _.flatten(await Promise.all([handleFeedDynamic(newItems), handleFeedLive(newItems)]));
+  const tasks = await handleFeedDynamic(newItems);
 
   for (const task of tasks) {
     await task();
@@ -234,10 +246,7 @@ function getFeedMap(items, filter) {
 }
 
 async function handleFeedDynamic(items) {
-  const dynamicMap = getFeedMap(
-    items,
-    ({ type, modules }) => type !== 'MAJOR_TYPE_LIVE' && String(modules.module_author.mid) in pushConfig.dynamic
-  );
+  const dynamicMap = getFeedMap(items, ({ modules }) => String(modules.module_author.mid) in pushConfig.dynamic);
   const tasks = [];
   for (const [uid, confs] of Object.entries(pushConfig.dynamic)) {
     const dynamics = dynamicMap[uid];
@@ -250,30 +259,6 @@ async function handleFeedDynamic(items) {
           if (global.config.bot.debug) console.log(`[BilibiliPush] push dynamic ${id} to group ${gid}`);
           return global.sendGroupMsg(gid, atAll ? `${text}\n\n${CQ.atAll()}` : text).catch(e => {
             console.error(`[BilibiliPush] push dynamic to group ${gid}`);
-            logError(e);
-          });
-        });
-      }
-    }
-  }
-  return tasks;
-}
-
-async function handleFeedLive(items) {
-  const liveMap = getFeedMap(
-    items,
-    ({ type, modules }) => type === 'MAJOR_TYPE_LIVE' && String(modules.module_author.mid) in pushConfig.live
-  );
-  const tasks = [];
-  for (const [uid, confs] of Object.entries(pushConfig.live)) {
-    const dynamics = liveMap[uid];
-    if (!dynamics?.length) continue;
-    for await (const { id, text } of dynamics) {
-      for (const { gid, atAll } of confs) {
-        tasks.push(() => {
-          if (global.config.bot.debug) console.log(`[BilibiliPush] push live ${id} to group ${gid}`);
-          return global.sendGroupMsg(gid, atAll ? `${text}\n\n${CQ.atAll()}` : text).catch(e => {
-            console.error(`[BilibiliPush] push live to group ${gid}`);
             logError(e);
           });
         });
