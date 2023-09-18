@@ -36,7 +36,7 @@ const majorFormatters = {
   MAJOR_TYPE_ARCHIVE: ({ archive: { cover, aid, bvid, title, stat } }) => [
     CQ.img(cover),
     `av${aid}`,
-    CQ.escape(title.trim()),
+    CQ.escape(title?.trim()),
     `${humanNum(stat.play)}播放 ${humanNum(stat.danmaku)}弹幕`,
     `https://www.bilibili.com/video/${bvid}`,
   ],
@@ -44,8 +44,8 @@ const majorFormatters = {
   // 文章
   MAJOR_TYPE_ARTICLE: ({ article: { covers, id, title, desc } }) => [
     ...(covers.length ? [CQ.img(covers[0])] : []),
-    `《${CQ.escape(title.trim())}》`,
-    CQ.escape(desc.trim()),
+    `《${CQ.escape(title?.trim())}》`,
+    CQ.escape(desc?.trim()),
     `https://www.bilibili.com/read/cv${id}`,
   ],
 
@@ -53,7 +53,7 @@ const majorFormatters = {
   MAJOR_TYPE_MUSIC: ({ music: { cover, id, title, label } }) => [
     CQ.img(cover),
     `au${id}`,
-    CQ.escape(title.trim()),
+    CQ.escape(title?.trim()),
     `分类：${label}`,
     `https://www.bilibili.com/audio/au${id}`,
   ],
@@ -69,19 +69,27 @@ const majorFormatters = {
   ],
 
   // 通用动态？
-  MAJOR_TYPE_OPUS: ({
+  MAJOR_TYPE_OPUS: async ({
     opus: {
-      jump_url,
       pics,
       summary: { text },
       title,
     },
-  }) => [
-    ...(pics.length ? [CQ.img(pics[0].url)] : []),
-    `《${CQ.escape(title.trim())}》`,
-    CQ.escape(text.trim()),
-    jump_url.replace(/^\/\//, 'https://'),
-  ],
+  }) => {
+    const lines = [];
+    if (title) lines.push('', `《${CQ.escape(title.trim())}》`);
+    if (text) lines.push('', CQ.escape(text.trim()));
+    if (pics.length) {
+      const { dynamicImgPreDl, imgPreDlTimeout } = global.config.bot.bilibili;
+      lines.push(
+        '',
+        ...(dynamicImgPreDl
+          ? await Promise.all(pics.map(({ url }) => CQ.imgPreDl(url, undefined, { timeout: imgPreDlTimeout * 1000 })))
+          : pics.map(({ url }) => CQ.img(url)))
+      );
+    }
+    return lines.slice(1);
+  },
 };
 
 const formatDynamic = async item => {
