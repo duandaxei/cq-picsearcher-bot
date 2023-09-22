@@ -367,6 +367,12 @@ async function privateAndAtMsg(e, context) {
     } catch (error) {}
   }
 
+  // 转换原图
+  if (handleOriginImgConvert(context)) {
+    e.stopPropagation();
+    return;
+  }
+
   if (hasImage(context.message)) {
     // 搜图
     e.stopPropagation();
@@ -529,17 +535,19 @@ async function searchImg(context, customDB = -1) {
   const msg = context.message;
   const imgs = getImgs(msg);
 
-  if (global.config.bot.searchFeedback && imgs.length && !args['get-url']) {
+  if (!imgs.length) return;
+
+  // 获取图片链接
+  if (/(^|\s|\])链接($|\s|\[)/.test(context.message) || args['get-url']) {
+    replyMsg(context, _.map(imgs, 'url').join('\n'));
+    return;
+  }
+
+  if (global.config.bot.searchFeedback) {
     replyMsg(context, global.config.bot.replys.searchFeedback, false, true);
   }
 
   for (const img of imgs) {
-    // 指令：获取图片链接
-    if (args['get-url']) {
-      replyMsg(context, img.url);
-      continue;
-    }
-
     // 获取缓存
     if (psCache.enable && !args.purge) {
       const cache = psCache.get(img, db);
@@ -688,8 +696,8 @@ function doAkhr(context) {
  * @returns 图片URL数组
  */
 function getImgs(msg) {
-  const cqimgs = CQ.from(msg).filter(cq => cq.type === 'image');
-  return cqimgs.map(cq => {
+  const cqImgs = CQ.from(msg).filter(cq => cq.type === 'image');
+  return cqImgs.map(cq => {
     const data = cq.pickData(['file', 'url']);
     data.url = getUniversalImgURL(data.url);
     return data;
@@ -963,4 +971,12 @@ function isSendByAdmin(ctx) {
   return ctx.message_type === 'guild'
     ? ctx.user_id === global.config.bot.adminTinyId
     : ctx.user_id === global.config.bot.admin;
+}
+
+function handleOriginImgConvert(ctx) {
+  if (!(/(^|\s|\])原图($|\s|\[)/.test(ctx.message) && hasImage(ctx.message))) return;
+  const cqImgs = CQ.from(ctx.message).filter(cq => cq.type === 'image');
+  const imgs = cqImgs.map(cq => CQ.img(cq.get('file')));
+  replyMsg(ctx, imgs.join(''), false, false);
+  return true;
 }
