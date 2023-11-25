@@ -1,6 +1,6 @@
 {
   "name": "cq-picsearcher-bot",
-  "version": "3.15.2",
+  "version": "3.15.4",
   "description": "二次元搜图机器人",
   "main": "index.mjs",
   "private": true,
@@ -16,7 +16,9 @@
     "update": "node scripts/update.js",
     "update:npm": "npm stop && git pull && npm i --production && npm start",
     "update:yarn": "npm stop && git pull && yarn --production && npm start",
-    "type:config": "node scripts/generateConfigType.js"
+    "type:config": "node scripts/generateConfigType.js",
+    "prepare:docker": "node scripts/prepareDocker.js",
+    "postversion": "tpv"
   },
   "repository": {
     "type": "git",
@@ -68,6 +70,7 @@
     "url-join": "^5.0.0"
   },
   "devDependencies": {
+    "@tsuk1ko/postversion": "^1.0.2",
     "@types/fs-extra": "^11.0.1",
     "@types/lodash-es": "^4.17.7",
     "eslint": "^8.43.0",

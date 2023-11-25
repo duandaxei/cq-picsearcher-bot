@@ -23,6 +23,7 @@ import asyncMap from './utils/asyncMap.mjs';
 import { execUpdate } from './utils/checkUpdate.mjs';
 import CQ from './utils/CQcode.mjs';
 import emitter from './utils/emitter.mjs';
+import { IS_DOCKER } from './utils/env.mjs';
 import { getAntiShieldedCqImg64FromUrl } from './utils/image.mjs';
 import logError from './utils/logError.mjs';
 import logger from './utils/logger.mjs';
@@ -293,7 +294,8 @@ function handleAdminMsg(context) {
 
   // 更新程序
   if (args['update-cqps']) {
-    replyMsg(context, '开始更新，完成后会重新启动').then(execUpdate);
+    if (IS_DOCKER) replyMsg(context, 'Docker 部署不支持一键更新');
+    else replyMsg(context, '开始更新，完成后会重新启动').then(execUpdate);
     return true;
   }
 
@@ -380,12 +382,12 @@ async function privateAndAtMsg(e, context) {
   } else if (context.message.search('--') !== -1) {
     // 忽略
   } else if (context.message_type === 'private') {
-    const dbKey = context.message === 'book' ? 'doujin' : context.message;
+    const dbKey = context.message;
     const db = snDB[dbKey];
     if (db) {
       logger.smSwitch(0, context.user_id, true);
       logger.smSetDB(0, context.user_id, db);
-      replyMsg(context, `已临时切换至[${dbKey}]搜图模式√`, true);
+      replyMsg(context, `已临时切换至【${dbKey}】搜图模式√`, true);
     } else {
       replyMsg(context, global.config.bot.replys.default, true);
     }
@@ -445,7 +447,7 @@ async function groupMsg(e, context) {
   if (smStatus) {
     // 获取搜图模式下的搜图参数
     const getDB = () => {
-      const cmd = /^(all|pixiv|danbooru|doujin|book|anime)$/.exec(context.message);
+      const cmd = /^(all|pixiv|danbooru|doujin|book|anime|原图)$/.exec(context.message);
       if (cmd) return snDB[cmd[1]] || -1;
       return -1;
     };
@@ -455,7 +457,7 @@ async function groupMsg(e, context) {
     if (cmdDB !== -1) {
       logger.smSetDB(group_id, user_id, cmdDB);
       smStatus = cmdDB;
-      replyMsg(context, `已切换至[${context.message}]搜图模式√`);
+      replyMsg(context, `已切换至【${context.message}】搜图模式√`);
     }
 
     // 有图片则搜图
@@ -530,6 +532,11 @@ async function searchImg(context, customDB = -1) {
       }
     }
   } else db = customDB;
+
+  if (db === snDB.原图) {
+    originImgConvert(context);
+    return;
+  }
 
   // 得到图片链接并搜图
   const msg = context.message;
@@ -980,8 +987,12 @@ function isSendByAdmin(ctx) {
 
 function handleOriginImgConvert(ctx) {
   if (!(/(^|\s|\])原图($|\s|\[)/.test(ctx.message) && hasImage(ctx.message))) return;
+  originImgConvert(ctx);
+  return true;
+}
+
+function originImgConvert(ctx) {
   const cqImgs = CQ.from(ctx.message).filter(cq => cq.type === 'image');
   const imgs = cqImgs.map(cq => CQ.img(cq.get('file')));
   replyMsg(ctx, imgs.join(''), false, false);
-  return true;
 }
