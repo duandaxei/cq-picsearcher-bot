@@ -544,6 +544,7 @@ async function searchImg(context, customDB = -1) {
 
   const incorrectImgs = _.remove(imgs, ({ url }) => !/^https?:\/\/[^&]+\//.test(url));
   if (incorrectImgs.length) {
+    if (global.config.bot.debug) console.warn('incorrect images:', incorrectImgs);
     replyMsg(context, '部分图片无法获取，请尝试使用其他设备QQ发送', false, true);
   }
 
@@ -711,7 +712,7 @@ function getImgs(msg) {
   const cqImgs = CQ.from(msg).filter(cq => cq.type === 'image');
   return cqImgs.map(cq => {
     const data = cq.pickData(['file', 'url']);
-    data.url = getUniversalImgURL(data.url);
+    data.url = getUniversalImgURL(data.url || data.file);
     return data;
   });
 }
